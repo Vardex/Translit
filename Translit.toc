@@ -1,7 +1,7 @@
 ## Interface: 80100
 ## Title: Translit
 ## Author: Vardex
-## Version: 1.0.0
+## Version: @project-version@
 ## Notes: Transliterate Chat and Tooltip
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
