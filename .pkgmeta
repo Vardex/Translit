@@ -1,10 +1,9 @@
 package-as: Translit
+enable-nolib-creation: no
 
 externals:
  Libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
  Libs/LibTranslit-1.0: git://github.com/Vardex/LibTranslit.git
-
- enable-nolib-creation: no
 
 ignore:
  - README.md
