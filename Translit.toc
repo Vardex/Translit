@@ -1,0 +1,12 @@
+## Interface: 80100
+## Title: Translit
+## Author: Vardex
+## Version: 1.0.0
+## Notes: Transliterate Chat and Tooltip
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## SavedVariables: Translit
+
+embeds.xml
+
+Translit.lua
