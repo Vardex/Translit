@@ -2,7 +2,6 @@ local f = CreateFrame("Frame")
 
 local options = {}
 
---local config = CreateFrame("Frame", "Translit")
 local config = CreateFrame("Frame")
 config.name = "Translit"
 
@@ -11,8 +10,8 @@ local configOpenRunOnce = false
 local LibTranslit = LibStub("LibTranslit-1.0")
 
 local function Chat(self, event, msg, author, ...)
-  msg = LibTranslit:Transliterate(msg, "!")
-  author = LibTranslit:Transliterate(author, "!")
+  msg = LibTranslit:Transliterate(msg, options.mark)
+  author = LibTranslit:Transliterate(author, options.mark)
   return false, msg, author, ...
 end
 
@@ -21,11 +20,11 @@ local function ChatHeader(self, arg1, arg2, arg3)
     return
   else
     if arg3 then
-      name = LibTranslit:Transliterate(arg3, "!")
+      name = LibTranslit:Transliterate(arg3, options.mark)
       lastHookChatFrame1EditBoxHeader = name
       self:SetFormattedText(arg1, arg2, name)
     else
-      name = LibTranslit:Transliterate(arg2, "!")
+      name = LibTranslit:Transliterate(arg2, options.mark)
       lastHookChatFrame1EditBoxHeader = name
       self:SetFormattedText(arg1, name)
     end
@@ -65,7 +64,7 @@ end
 local function Tooltip(self)
     for i=1, self:NumLines() do
       local text = _G["GameTooltipTextLeft"..i]
-      text:SetText(((LibTranslit:Transliterate(text:GetText(), "!") or "")))
+      text:SetText(((LibTranslit:Transliterate(text:GetText(), options.mark) or "")))
     end
 end
 
@@ -85,9 +84,22 @@ local function SetupConfig(c)
 	config.title:SetPoint("TOPLEFT", config, 10, -10)
 	config.title:SetText(config.name)
 
+  config.markBoxTitle = config:CreateFontString("TranslitMarkBoxTitle", "ARTWORK", "GameFontNormal")
+	config.markBoxTitle:SetFont(GameFontNormal:GetFont(), 12, "OUTLINE")
+	config.markBoxTitle:SetPoint("TOPLEFT", config, 10, -50)
+	config.markBoxTitle:SetText("|cffffffff" .. "Transliteration Mark: " .. "|r")
 
+	config.markBox = CreateFrame("EditBox", "TranslitMarkBox", config, "InputBoxTemplate")
+	config.markBox:SetPoint("TOPLEFT", config, 120, -46)
+	config.markBox:SetSize(20, 20)
+	config.markBox:SetAutoFocus(false)
+	config.markBox:SetMultiLine(false)
+	config.markBox:SetText(options.mark)
+	config.markBox:SetCursorPosition(0)
+	config.markBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
+  
 	config.chatButton = CreateFrame("CheckButton", "TranslitChatButton", config, "InterfaceOptionsCheckButtonTemplate")
-	config.chatButton:SetPoint("TOPLEFT", config, 10, -48)
+	config.chatButton:SetPoint("TOPLEFT", config, 10, -80)
 	config.chatButton:SetChecked(options.chat)
 	config.chatButton:SetHitRectInsets(0, -200, 0, 0)
 	config.chatButtonTitle = config:CreateFontString("TranslitChatButtonTitle", "ARTWORK", "GameFontNormal")
@@ -96,7 +108,7 @@ local function SetupConfig(c)
 	config.chatButtonTitle:SetText("|cffffffff Translit Chat|r")
 
 	config.tooltipButton = CreateFrame("CheckButton", "TranslitTooltipButton", config, "InterfaceOptionsCheckButtonTemplate")
-	config.tooltipButton:SetPoint("TOPLEFT", config, 10, -78)
+	config.tooltipButton:SetPoint("TOPLEFT", config, 10, -110)
 	config.tooltipButton:SetChecked(options.tooltip)
 	config.tooltipButton:SetHitRectInsets(0, -200, 0, 0)
 	config.tooltipButtonTitle = config:CreateFontString("TranslitTooltipButtonTitle", "ARTWORK", "GameFontNormal")
@@ -104,21 +116,22 @@ local function SetupConfig(c)
 	config.tooltipButtonTitle:SetPoint("LEFT", config.tooltipButton, 30, 0)
 	config.tooltipButtonTitle:SetText("|cffffffff Translit Tooltip|r")	
   
-
   config.okay = function(self)
+    Translit.mark = config.markBox:GetText()
     Translit.chat = config.chatButton:GetChecked()
     Translit.tooltip  = config.tooltipButton:GetChecked()
     
-
-    ReloadUI()
+    --ReloadUI()
     options = Translit
-	end
-
-	config.cancel = function(self)
+  end
+  
+  config.cancel = function(self)
+    config.markBox:SetText(options.mark)
 		config.chatButton:SetChecked(options.chat)	
 		config.tooltipButton:SetChecked(options.tooltip)
 	end
 
+  print(config)
 	InterfaceOptions_AddCategory(config)
 
 end
@@ -140,6 +153,7 @@ function f:ADDON_LOADED(addon)
     f:UnregisterEvent("ADDON_LOADED")
 
     local defaults = {
+      mark = "!",
 			chat = true,
 			tooltip = true
     }
