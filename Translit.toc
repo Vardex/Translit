@@ -5,7 +5,7 @@
 ## Notes: Transliterate Chat and Tooltip
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## SavedVariables: Translit
+## SavedVariables: TranslitSaved
 
 embeds.xml
 

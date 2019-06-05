@@ -9,6 +9,7 @@ local configOpenRunOnce = false
 
 local LibTranslit = LibStub("LibTranslit-1.0")
 
+
 local function Chat(self, event, msg, author, ...)
   msg = LibTranslit:Transliterate(msg, options.mark)
   author = LibTranslit:Transliterate(author, options.mark)
@@ -62,14 +63,13 @@ local function SetupChat()
 end
 
 local function Tooltip(self)
-    for i=1, self:NumLines() do
-      local text = _G["GameTooltipTextLeft"..i]
-      text:SetText(((LibTranslit:Transliterate(text:GetText(), options.mark) or "")))
-    end
+  for i=1, self:NumLines() do
+    local text = _G["GameTooltipTextLeft"..i]
+    text:SetText(((LibTranslit:Transliterate(text:GetText(), options.mark) or "")))
+  end
 end
 
 local function SetupTooltip()
-  local lastHookGameTooltip = nil
   hooksecurefunc(GameTooltip, "Show", Tooltip)
 end
 
@@ -90,7 +90,7 @@ local function SetupConfig(c)
 	config.markBoxTitle:SetText("|cffffffff" .. "Transliteration Mark: " .. "|r")
 
 	config.markBox = CreateFrame("EditBox", "TranslitMarkBox", config, "InputBoxTemplate")
-	config.markBox:SetPoint("TOPLEFT", config, 120, -46)
+	config.markBox:SetPoint("TOPLEFT", config, 150, -46)
 	config.markBox:SetSize(20, 20)
 	config.markBox:SetAutoFocus(false)
 	config.markBox:SetMultiLine(false)
@@ -117,12 +117,11 @@ local function SetupConfig(c)
 	config.tooltipButtonTitle:SetText("|cffffffff Translit Tooltip|r")	
   
   config.okay = function(self)
-    Translit.mark = config.markBox:GetText()
-    Translit.chat = config.chatButton:GetChecked()
-    Translit.tooltip  = config.tooltipButton:GetChecked()
+    TranslitSaved.mark = config.markBox:GetText()
+    TranslitSaved.chat = config.chatButton:GetChecked()
+    TranslitSaved.tooltip  = config.tooltipButton:GetChecked()
     
-    --ReloadUI()
-    options = Translit
+    options = TranslitSaved
   end
   
   config.cancel = function(self)
@@ -131,7 +130,6 @@ local function SetupConfig(c)
 		config.tooltipButton:SetChecked(options.tooltip)
 	end
 
-  print(config)
 	InterfaceOptions_AddCategory(config)
 
 end
@@ -158,15 +156,15 @@ function f:ADDON_LOADED(addon)
 			tooltip = true
     }
     
-    Translit = Translit or {}
+    TranslitSaved = TranslitSaved or {}
 
     for k,v in pairs(defaults) do
-			if Translit[k] == nil then
-				Translit[k] = v
+			if TranslitSaved[k] == nil then
+				TranslitSaved[k] = v
 			end
     end
     
-    options = Translit
+    options = TranslitSaved
 
     SLASH_TRANSLIT1 = "/translit"
 		SlashCmdList.TRANSLIT = function(msg)
