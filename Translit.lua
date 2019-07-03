@@ -65,7 +65,9 @@ end
 local function Tooltip(self)
   for i=1, self:NumLines() do
     local text = _G["GameTooltipTextLeft"..i]
-    text:SetText(((LibTranslit:Transliterate(text:GetText(), options.mark) or "")))
+    if text then
+      text:SetText(((LibTranslit:Transliterate(text:GetText(), options.mark) or "")))
+    end
   end
 end
 
